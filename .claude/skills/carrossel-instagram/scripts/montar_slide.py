@@ -17,6 +17,14 @@ MODELO 2 (Imersivo, full-bleed, texto a esquerda) — campos por lamina:
 
 Json comum: tema, handle, marca, saida, paleta {fundo, titulo, destaque,
 destaque_claro, texto, nota}. Caminhos relativos ao proprio json.
+
+Limites e regras:
+- caixa.passos: no maximo 2 linhas renderizadas; caixa.nota: 1 linha (o excedente e cortado).
+- NAO use emoji nos textos das laminas — as fontes nao renderizam (viram quadrados).
+- Se a cor de destaque for escura (some no preto), os TEXTOS de destaque usam
+  automaticamente destaque_claro; preenchimentos mantem a cor original.
+- Modelo 1: a imagem cobre a largura toda do card, sem escurecimento (gere em paisagem,
+  1536x1024). Modelo 2: a imagem cobre a lamina inteira (gere em retrato, 1024x1536).
 """
 
 import json
@@ -121,12 +129,24 @@ def texto_espacado(draw, cx, y, texto, f, cor, espaco=6):
         x += lg + espaco
 
 
-def cor_contraste(hex_cor):
-    """Texto escuro sobre preenchimento claro; texto claro sobre escuro."""
+def _luminancia(hex_cor):
     h = hex_cor.lstrip("#")
     r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
-    lum = 0.299 * r + 0.587 * g + 0.114 * b
-    return "#141414" if lum > 150 else "#F5EFE6"
+    return 0.299 * r + 0.587 * g + 0.114 * b
+
+
+def cor_contraste(hex_cor):
+    """Texto escuro sobre preenchimento claro; texto claro sobre escuro."""
+    return "#141414" if _luminancia(hex_cor) > 150 else "#F5EFE6"
+
+
+def cor_destaque_texto(pal):
+    """Cor de destaque para TEXTO sobre fundo escuro: se a cor for escura demais
+    (some no preto), usa a versao acesa (destaque_claro). Preenchimentos continuam
+    usando a cor original."""
+    if _luminancia(pal["destaque"]) < 100:
+        return pal.get("destaque_claro", pal["destaque"])
+    return pal["destaque"]
 
 
 def fundo_texturizado(cor_hex):
@@ -156,23 +176,24 @@ def pilula(d, x, y, texto, f, preenchimento, cor_texto, pad_x=26, pad_y=12):
 # ---------------------------------------------------------------- MODELO 1
 
 def colar_imagem(canvas, caminho, topo, base):
+    """Cobre a LARGURA TODA do card entre topo e base: escala para cobrir, corta o
+    excesso de altura e esfuma so as bordas superior/inferior para fundir no fundo.
+    A imagem NUNCA e escurecida — ela deve ficar viva e colorida."""
     try:
         img = Image.open(caminho).convert("RGB")
     except OSError:
         return topo
-    alt_max = max(base - topo, 100)
-    escala = min(W / img.width, alt_max / img.height)
-    img = img.resize((int(img.width * escala), int(img.height * escala)), Image.LANCZOS)
+    alt_disp = max(base - topo, 100)
+    img = cobrir(img, W, alt_disp)
     masc = Image.new("L", img.size, 255)
     dm = ImageDraw.Draw(masc)
-    borda = 60
+    borda = 80
     for i in range(borda):
         opac = int(255 * i / borda)
-        dm.rectangle([i, i, img.width - 1 - i, img.height - 1 - i], outline=opac)
-    x = (W - img.width) // 2
-    y = topo + (alt_max - img.height) // 2
-    canvas.paste(img, (x, y), masc)
-    return y + img.height
+        dm.line([(0, i), (img.width, i)], fill=opac)
+        dm.line([(0, img.height - 1 - i), (img.width, img.height - 1 - i)], fill=opac)
+    canvas.paste(img, (0, topo), masc)
+    return topo + alt_disp
 
 
 def montar_m1(spec, pal, meta, dir_base):
@@ -190,7 +211,7 @@ def montar_m1(spec, pal, meta, dir_base):
     for linha in spec.get("titulo", []):
         txt = linha["texto"].upper()
         f = fonte_ajustada(d, txt, FONTES_TITULO, 128, LARG_UTIL)
-        cor = pal["destaque"] if linha.get("destaque") else pal["titulo"]
+        cor = cor_destaque_texto(pal) if linha.get("destaque") else pal["titulo"]
         d.text((cx, y), txt, font=f, fill=cor, anchor="ma")
         y += alt(d, txt, f) + 26
     y += 12
@@ -211,8 +232,17 @@ def montar_m1(spec, pal, meta, dir_base):
     if extra:
         y_reservado -= 56
     alt_caixa = 0
+    caixa_passos = []
+    caixa_nota = None
     if caixa:
-        alt_caixa = 150 + (58 if caixa.get("nota") else 0)
+        if caixa.get("passos"):
+            caixa_passos = quebrar(d, caixa["passos"], fonte(FONTES_CORPO_BOLD, 30),
+                                   LARG_UTIL - 60)[:2]  # limite: 2 linhas
+        if caixa.get("nota"):
+            caixa_nota = quebrar(d, caixa["nota"], fonte(FONTES_CORPO, 26),
+                                 LARG_UTIL - 60)[0]  # limite: 1 linha
+        alt_caixa = (44 + (62 if caixa.get("url") else 0)
+                     + 40 * len(caixa_passos) + (44 if caixa_nota else 0) + 14)
         y_reservado -= alt_caixa + 30
 
     if lista:
@@ -251,14 +281,14 @@ def montar_m1(spec, pal, meta, dir_base):
             f = fonte(FONTES_TITULO, 44)
             d.text((MARGEM + 30, yc), caixa["url"], font=f, fill=pal["destaque_claro"])
             yc += 62
-        if caixa.get("passos"):
+        if caixa_passos:
             f = fonte(FONTES_CORPO_BOLD, 30)
-            for ln in quebrar(d, caixa["passos"], f, LARG_UTIL - 60)[:2]:
+            for ln in caixa_passos:
                 d.text((MARGEM + 30, yc), ln, font=f, fill=pal["texto"])
                 yc += 40
-        if caixa.get("nota"):
+        if caixa_nota:
             f = fonte(FONTES_CORPO, 26)
-            d.text((MARGEM + 30, yc + 6), caixa["nota"], font=f, fill=pal["nota"])
+            d.text((MARGEM + 30, yc + 4), caixa_nota, font=f, fill=pal["nota"])
 
     if extra:
         f = fonte(FONTES_CORPO_BOLD, 28)
@@ -469,7 +499,7 @@ def main():
         spec = json.load(f)
 
     pal = {"fundo": "#0A0A0A", "titulo": "#F5EFE6", "destaque": "#7A1F2D",
-           "destaque_claro": "#A83245", "texto": "#EDEDED", "nota": "#9A9A9A"}
+           "destaque_claro": "#C8374F", "texto": "#EDEDED", "nota": "#9A9A9A"}
     pal.update(spec.get("paleta", {}))
     dir_saida = os.path.join(dir_base, spec.get("saida", "finais"))
     os.makedirs(dir_saida, exist_ok=True)
