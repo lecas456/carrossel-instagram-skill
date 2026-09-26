@@ -18,7 +18,8 @@ já contém tudo o que é necessário para reproduzir os estilos.
    ("Grátis, mas pede cadastro", "Site em inglês").
 4. Penúltima lâmina = recap em lista; última = CTA da marca + pergunta de engajamento.
 5. TODAS as imagens do carrossel com a mesma luz e atmosfera → parece uma coleção.
-6. Selo fino "Ilustração" quando a imagem for de IA (honestidade visual).
+6. Selo "Ilustração" é OPCIONAL e vem desligado (`"selo_ilustracao": true` no json para
+   ativar) — o Instagram já rotula "Conteúdo de IA" sozinho; não repetir em toda lâmina.
 7. **Imagem grande e VIVA**: a imagem ocupa boa parte da lâmina, com cores ricas e bem
    iluminada. NUNCA escurecer nem encolher a imagem para "caber" — o script já corta e
    esfuma as bordas. Texto por cima da imagem é permitido, desde que continue legível

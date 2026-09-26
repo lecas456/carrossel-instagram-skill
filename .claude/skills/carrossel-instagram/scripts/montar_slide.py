@@ -22,7 +22,9 @@ MODELO 3 (Post unico estilo tweet, fundo branco) — campos por lamina:
 
 Json comum: tema, handle, marca, saida, paleta {fundo, titulo, destaque,
 destaque_claro, texto, nota}, sombra_texto (Modelo 2: intensidade da sombra atras
-do texto; padrao 1.0, ex.: 1.3 = mais escura, 0.6 = mais sutil, 0 = sem sombra).
+do texto; padrao 1.0, ex.: 1.3 = mais escura, 0.6 = mais sutil, 0 = sem sombra),
+selo_ilustracao (true para escrever "Ilustração" nas laminas com imagem; padrao
+false — o Instagram ja rotula conteudo de IA sozinho).
 Caminhos relativos ao proprio json.
 
 Limites e regras:
@@ -277,8 +279,10 @@ def montar_m1(spec, pal, meta, dir_base):
             colar_imagem(canvas, os.path.join(dir_base, spec["imagem"]), y_l + 10, y_reservado)
     elif spec.get("imagem"):
         colar_imagem(canvas, os.path.join(dir_base, spec["imagem"]), y, y_reservado)
-        f = fonte(FONTES_CORPO, 20)
-        d.text((W - MARGEM, y_reservado - 8), "Ilustração", font=f, fill=pal["nota"], anchor="rs")
+        if meta.get("selo_ilustracao"):
+            f = fonte(FONTES_CORPO, 20)
+            d.text((W - MARGEM, y_reservado - 8), "Ilustração", font=f,
+                   fill=pal["nota"], anchor="rs")
 
     if caixa:
         topo_cx = y_reservado + 30
@@ -383,7 +387,7 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
         if linha.get("destaque"):
             # balao centralizado na caixa de tinta REAL das letras, com folga igual
             # em todos os lados (nao invade a linha de cima nem corta a de baixo)
-            y += 8  # respiro extra entre a linha anterior e o balao
+            y += 16  # respiro para o balao manter o mesmo ritmo das linhas normais
             l, t, r, b = d.textbbox((X + 10, y), txt, font=f)
             pad = 16
             d.rounded_rectangle([l - pad, t - pad, r + pad, b + pad],
@@ -495,7 +499,7 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
                pal["destaque"], cor_pill_txt, pad_x=26, pad_y=11)
     f = fonte(FONTES_CORPO_BOLD, 30)
     d.text((W - X, y_f + 4), meta.get("marca", ""), font=f, fill=pal["titulo"], anchor="ra")
-    if caminho:
+    if caminho and meta.get("selo_ilustracao"):
         f = fonte(FONTES_CORPO, 20)
         d.text((W - X, y_f - 26), "Ilustração", font=f, fill=pal["nota"], anchor="rs")
 
