@@ -7,9 +7,9 @@ seu nicho, estrutura 7–9 lâminas com lógica de engajamento, gera as imagens 
 
 O estilo foi calibrado em carrosséis reais de alto engajamento e vem em **dois modelos**:
 
-| Modelo 1 — Vitrine | Modelo 2 — Imersivo (capa) | Modelo 2 — Imersivo (conteúdo) |
-|---|---|---|
-| ![Modelo 1](exemplos/modelo-1-vitrine.png) | ![Modelo 2 capa](exemplos/modelo-2-capa.png) | ![Modelo 2](exemplos/modelo-2-imersivo.png) |
+| Modelo 1 — Vitrine | Modelo 2 — Imersivo (capa) | Modelo 2 — Imersivo (conteúdo) | Modelo 3 — Post Único |
+|---|---|---|---|
+| ![Modelo 1](exemplos/modelo-1-vitrine.png) | ![Modelo 2 capa](exemplos/modelo-2-capa.png) | ![Modelo 2](exemplos/modelo-2-imersivo.png) | ![Modelo 3](exemplos/modelo-3-post-unico.png) |
 
 *(exemplos reais: imagens geradas com gpt-image-1 em qualidade `low` e montadas pela skill)*
 
@@ -18,6 +18,10 @@ O estilo foi calibrado em carrosséis reais de alto engajamento e vem em **dois 
 - **Modelo 2 — Imersivo:** imagem cinematográfica cobrindo a lâmina inteira, texto em
   coluna à esquerda, teaser "Próximo: ... »" e barra de progresso. Ideal para
   storytelling e temas emocionais.
+- **Modelo 3 — Post Único (estilo tweet):** arte única de opinião com foto de perfil,
+  nome, @ e texto grande sobre fundo branco. Sem imagem de IA — custo zero. A skill
+  tenta baixar a foto de perfil do Instagram automaticamente (e pede a foto se o
+  Instagram bloquear).
 
 ## Como instalar
 

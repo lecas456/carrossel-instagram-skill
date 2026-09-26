@@ -1,6 +1,6 @@
 ---
 name: carrossel-instagram
-description: Roteiro completo para criar carrosséis profissionais de Instagram (7 a 9 lâminas 1080x1350) em dois modelos visuais — Vitrine (imagem central estilo museu) e Imersivo (imagem de fundo inteira com texto à esquerda). Use quando o usuário pedir para criar um carrossel, post em carrossel, sequência de slides para Instagram, ou mencionar "roteiro de carrossel". Cobre paleta, tema com pesquisa de tendências, estrutura de engajamento, prompts de imagem, geração via OpenAI (gpt-image-1) e montagem final com Pillow.
+description: Roteiro completo para criar posts profissionais de Instagram em três modelos — carrossel Vitrine (imagem central estilo museu), carrossel Imersivo (imagem de fundo inteira com texto à esquerda) e Post Único estilo tweet (fundo branco, foto de perfil + texto de opinião). Use quando o usuário pedir carrossel, post em carrossel, sequência de slides, post único, post de opinião ou "print de tweet" para Instagram. Cobre paleta, tema com pesquisa de tendências, estrutura de engajamento, prompts de imagem, geração via OpenAI (gpt-image-1) e montagem final com Pillow.
 ---
 
 # Carrossel de Instagram — Roteiro de Execução
@@ -14,7 +14,12 @@ consulte as imagens para calibrar ainda mais o estilo — mas a skill funciona s
 Scripts desta skill (rodar com `python`):
 - `scripts/gerar_imagem.py` — gera 1 imagem via API OpenAI (gpt-image-1), só stdlib.
 - `scripts/montar_slide.py` — compõe as lâminas finais 1080x1350 (Pillow) a partir de um
-  `slides.json`. Suporta os dois modelos (`"modelo": 1` ou `2`).
+  `slides.json`. Suporta os três modelos (`"modelo": 1`, `2` ou `3`).
+- `scripts/baixar_avatar.py` — tenta baixar a foto de perfil pública de um Instagram.
+
+**Atalho:** se o pedido for um POST ÚNICO (uma arte só, estilo tweet), pule direto para
+a seção "Fluxo Post Único (Modelo 3)" no fim deste arquivo — os Passos 2 a 7 abaixo
+são o fluxo de CARROSSEL.
 
 ## Passo 0 — Contexto do perfil (antes de qualquer padrão)
 
@@ -167,3 +172,26 @@ Salve todos os prompts em `<pasta do tema>/prompts.md` (um bloco por lâmina, nu
 ```
 
 Liste para o usuário todos os arquivos gerados (caminhos clicáveis), na ordem de postagem.
+
+## Fluxo Post Único (Modelo 3) — arte única estilo tweet
+
+Formato vencedor para opinião/autoridade: fundo branco, foto de perfil + nome + @,
+texto grande preto com punchline. Sem imagem de IA — custo zero e entrega em minutos.
+
+1. **Perfil:** pergunte o @ do Instagram da pessoa (AskUserQuestion). Confirme o nome
+   de exibição — um WebFetch em `instagram.com/<usuario>/` traz o nome no título da
+   página mesmo quando o resto é bloqueado.
+2. **Foto de perfil:** rode
+   `python <skill>/scripts/baixar_avatar.py <usuario> --out "<tema>/avatar.jpg"`.
+   O Instagram costuma bloquear acesso anônimo; se o script falhar, peça ao usuário
+   para enviar/salvar a foto (qualquer .jpg/.png — o script recorta em círculo sozinho).
+   Se ele não tiver a foto na hora, siga com o avatar de inicial (o `montar_slide.py`
+   desenha um círculo na cor de destaque com a primeira letra do nome).
+3. **Texto:** pergunte o tema/opinião do post. Escreva no formato da referência
+   (ver "MODELO 3" em `references/estilo-visual.md`): afirmação forte e específica em
+   3-6 linhas curtas + parágrafo final de UMA linha como punchline. Sem hashtag, sem
+   emoji na arte. Valide o texto com o usuário antes de montar.
+4. **Montagem:** escreva o `slides.json` (lâmina com `"modelo": 3`, campos `nome`,
+   `usuario`, `avatar`, `texto`) e rode o `montar_slide.py`. Confira o resultado (Read).
+5. **Entrega:** pasta com o nome do tema + sugestão de legenda (emoji permitido na
+   legenda) e hashtags.

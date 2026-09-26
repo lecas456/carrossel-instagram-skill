@@ -15,6 +15,11 @@ MODELO 2 (Imersivo, full-bleed, texto a esquerda) — campos por lamina:
   dica (caixa com raio), botao (pilula da capa), proximo (teaser "Proximo: ... >>"),
   lista [[nome, desc, url], ...] (recap), imagem (fundo inteiro)
 
+MODELO 3 (Post unico estilo tweet, fundo branco) — campos por lamina:
+  arquivo, nome, usuario (@), avatar (caminho da foto de perfil; sem ela vira
+  circulo com a inicial), texto (paragrafos separados por linha em branco;
+  o ultimo paragrafo e a punchline). Opcionais: fundo (#FFFFFF), cor (#111111).
+
 Json comum: tema, handle, marca, saida, paleta {fundo, titulo, destaque,
 destaque_claro, texto, nota}, sombra_texto (Modelo 2: intensidade da sombra atras
 do texto; padrao 1.0, ex.: 1.3 = mais escura, 0.6 = mais sutil, 0 = sem sombra).
@@ -518,6 +523,71 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
     return canvas
 
 
+# ---------------------------------------------------------------- MODELO 3
+
+def montar_m3(spec, pal, meta, dir_base):
+    """Post unico estilo tweet: fundo branco, avatar + nome + @, texto grande."""
+    fundo = spec.get("fundo", "#FFFFFF")
+    cor_texto = spec.get("cor", "#111111")
+    cor_handle = "#8E8E8E"
+    canvas = Image.new("RGB", (W, H), fundo)
+    d = ImageDraw.Draw(canvas)
+    X = 96
+    tam = 128
+    ax, ay = X, 116
+
+    avatar = None
+    caminho = spec.get("avatar")
+    if caminho:
+        try:
+            avatar = Image.open(os.path.join(dir_base, caminho)).convert("RGB")
+        except OSError:
+            avatar = None
+    if avatar is not None:
+        # recorte circular com mascara supersample (borda lisa)
+        avatar = cobrir(avatar, tam * 4, tam * 4).resize((tam, tam), Image.LANCZOS)
+        masc = Image.new("L", (tam * 4, tam * 4), 0)
+        ImageDraw.Draw(masc).ellipse([0, 0, tam * 4 - 1, tam * 4 - 1], fill=255)
+        canvas.paste(avatar, (ax, ay), masc.resize((tam, tam), Image.LANCZOS))
+    else:
+        d.ellipse([ax, ay, ax + tam, ay + tam], fill=pal["destaque"])
+        f_ini = fonte(FONTES_TITULO, 60)
+        inicial = (spec.get("nome") or "?").strip()[0].upper()
+        d.text((ax + tam / 2, ay + tam / 2), inicial, font=f_ini,
+               fill=cor_contraste(pal["destaque"]), anchor="mm")
+
+    tx = ax + tam + 32
+    d.text((tx, ay + 16), spec.get("nome", ""), font=fonte(FONTES_CORPO_BOLD, 42),
+           fill=cor_texto)
+    usuario = spec.get("usuario", "")
+    if usuario and not usuario.startswith("@"):
+        usuario = "@" + usuario
+    d.text((tx, ay + 74), usuario, font=fonte(FONTES_CORPO, 34), fill=cor_handle)
+
+    # texto grande com auto-ajuste (paragrafos separados por linha em branco)
+    paragrafos = [p.strip() for p in spec.get("texto", "").split("\n\n") if p.strip()]
+    topo, base = ay + tam + 96, H - 110
+    tam_f = 64
+    linhas_por_p, f_t, alt_linha = [], None, 0
+    while tam_f >= 38:
+        f_t = fonte(FONTES_CORPO, tam_f)
+        alt_linha = int(tam_f * 1.42)
+        linhas_por_p = [quebrar(d, p, f_t, W - 2 * X) for p in paragrafos]
+        altura = (sum(len(ls) for ls in linhas_por_p) * alt_linha
+                  + max(0, len(paragrafos) - 1) * int(alt_linha * 0.7))
+        if topo + altura <= base:
+            break
+        tam_f -= 4
+    y = topo
+    for i, ls in enumerate(linhas_por_p):
+        for ln in ls:
+            d.text((X, y), ln, font=f_t, fill=cor_texto)
+            y += alt_linha
+        if i < len(linhas_por_p) - 1:
+            y += int(alt_linha * 0.7)
+    return canvas
+
+
 # ---------------------------------------------------------------- principal
 
 def main():
@@ -540,7 +610,9 @@ def main():
     gerados = []
     for idx, slide in enumerate(slides):
         modelo = slide.get("modelo", modelo_padrao)
-        if modelo == 2:
+        if modelo == 3:
+            img = montar_m3(slide, pal, spec, dir_base)
+        elif modelo == 2:
             img = montar_m2(slide, pal, spec, dir_base, idx, len(slides))
         else:
             img = montar_m1(slide, pal, spec, dir_base)

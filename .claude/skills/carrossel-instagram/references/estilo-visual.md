@@ -96,6 +96,46 @@ ELEMENTOS PREENCHIDOS (pílulas/caixas), não só em letras.
 
 ---
 
+## MODELO 3 — Post Único (estilo tweet, opinião/autoridade)
+
+Quando usar: opinião forte, posicionamento, frase de autoridade, reação a notícia do
+nicho. É UMA arte só, sem imagem de IA — o poder está no texto. Referência: posts de
+"print de tweet" com alto compartilhamento.
+
+### Anatomia (1080x1350, fundo BRANCO #FFFFFF)
+
+| Zona | Conteúdo | Especificação |
+|---|---|---|
+| Cabeçalho | foto de perfil circular + nome + @usuario | avatar ~128px no topo-esquerda; nome bold escuro; @ em cinza |
+| Texto | a mensagem | DM Sans regular, GRANDE (~64px, auto-ajuste), preto #111 sobre branco, alinhado à esquerda |
+| Punchline | último parágrafo, separado por linha em branco | 1 linha seca que fecha o raciocínio ("Aqui se faz, aqui se paga.") |
+
+Sem rodapé, sem logo, sem hashtag, sem emoji — a força do formato é parecer um
+pensamento cru, não uma arte produzida.
+
+### Fórmula de escrita
+
+1. **Afirmação forte e específica** (3-6 linhas curtas na arte): um fato ou opinião
+   que o público do nicho sente mas não verbaliza. Números concretos aumentam o peso
+   ("apostou 30 milhões", "curso com certificado de graça").
+2. **Punchline de UMA linha** como parágrafo final: fecho seco, quase provérbio.
+3. Tom de conversa, primeira pessoa opcional, zero jargão institucional.
+
+### JSON (lâmina)
+
+```json
+{
+  "arquivo": "post.png", "modelo": 3,
+  "nome": "Nome de Exibição", "usuario": "@usuario",
+  "avatar": "avatar.jpg",
+  "texto": "Afirmação forte em poucas linhas.\n\nPunchline de uma linha."
+}
+```
+
+Sem `avatar`, o script desenha um círculo na cor de destaque com a inicial do nome.
+
+---
+
 ## Paleta
 
 | Papel | Vencedores (referência) | Padrão desta skill |
