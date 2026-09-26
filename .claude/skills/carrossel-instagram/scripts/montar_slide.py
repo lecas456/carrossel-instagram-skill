@@ -37,13 +37,17 @@ W, H = 1080, 1350
 MARGEM = 70
 LARG_UTIL = W - 2 * MARGEM
 
-FONTES_TITULO = ["anton.ttf", "anton-regular.ttf", "archivoblack.ttf", "impact.ttf",
+# Anton = tudo que e impactante (titulos, kickers M2, numeros, pilulas de destaque).
+# DM Sans = escritas secundarias (subtitulos, paragrafos, notas, rodape).
+# Ambas vem na pasta fonts/ da skill; o resto e fallback de sistema.
+FONTES_TITULO = ["anton-regular.ttf", "anton.ttf", "archivoblack.ttf", "impact.ttf",
                  "ariblk.ttf", "arialbd.ttf", "dejavusans-bold.ttf",
                  "liberationsans-bold.ttf"]
-FONTES_CORPO_BOLD = ["seguisb.ttf", "segoeuib.ttf", "arialbd.ttf", "helvetica.ttc",
+FONTES_CORPO_BOLD = ["dmsans-semibold.ttf", "dmsans-bold.ttf", "seguisb.ttf",
+                     "segoeuib.ttf", "arialbd.ttf", "helvetica.ttc",
                      "dejavusans-bold.ttf", "liberationsans-bold.ttf"]
-FONTES_CORPO = ["segoeui.ttf", "arial.ttf", "helvetica.ttc", "dejavusans.ttf",
-                "liberationsans-regular.ttf"]
+FONTES_CORPO = ["dmsans-regular.ttf", "dmsans-medium.ttf", "segoeui.ttf", "arial.ttf",
+                "helvetica.ttc", "dejavusans.ttf", "liberationsans-regular.ttf"]
 FONTES_MONO = ["consolab.ttf", "consola.ttf", "courbd.ttf", "cour.ttf", "menlo.ttc",
                "dejavusansmono-bold.ttf", "liberationmono-bold.ttf"]
 
@@ -150,12 +154,13 @@ def cor_destaque_texto(pal):
 
 
 def fundo_texturizado(cor_hex):
+    """Fundo preto puro com vinheta central MUITO sutil (sem acinzentar)."""
     base = Image.new("RGB", (W, H), cor_hex)
     vin = Image.new("L", (W, H), 0)
     dv = ImageDraw.Draw(vin)
-    dv.ellipse([-W * 0.4, -H * 0.25, W * 1.4, H * 1.05], fill=26)
+    dv.ellipse([-W * 0.4, -H * 0.25, W * 1.4, H * 1.05], fill=13)
     vin = vin.filter(ImageFilter.GaussianBlur(180))
-    claro = Image.new("RGB", (W, H), "#1c1a18")
+    claro = Image.new("RGB", (W, H), "#141110")
     return Image.composite(claro, base, vin)
 
 
@@ -315,7 +320,7 @@ def cobrir(img, w, h):
 
 
 def aplicar_scrim(canvas):
-    preto = Image.new("RGB", (W, H), "#050505")
+    preto = Image.new("RGB", (W, H), "#000000")
     # esquerda -> direita (coluna de texto)
     g = Image.new("L", (W, 1), 0)
     for x in range(W):
@@ -345,7 +350,10 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
     if canvas is None:
         canvas = fundo_texturizado(pal["fundo"])
     aplicar_scrim(canvas)
-    d = ImageDraw.Draw(canvas)
+    # o conteudo e desenhado numa camada separada; o proprio desenho borrado vira
+    # uma sombra preta sutil atras do texto (na frente da imagem), para legibilidade
+    overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(overlay)
 
     X = 64
     COL = 620
@@ -484,6 +492,12 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
             x0 = X + i * (seg + gap)
             cor = pal["destaque"] if i <= idx else "#4a4a4a"
             d.rounded_rectangle([x0, y_b, x0 + seg, y_b + 12], radius=6, fill=cor)
+
+    # sombra sutil seguindo o contorno do conteudo + conteudo por cima
+    sombra = overlay.split()[3].filter(ImageFilter.GaussianBlur(26))
+    sombra = sombra.point(lambda a: min(120, int(a * 0.65)))
+    canvas.paste(Image.new("RGB", (W, H), "#000000"), (0, 0), sombra)
+    canvas.paste(overlay, (0, 0), overlay)
     return canvas
 
 
@@ -498,7 +512,7 @@ def main():
     with open(caminho_json, "r", encoding="utf-8-sig") as f:
         spec = json.load(f)
 
-    pal = {"fundo": "#0A0A0A", "titulo": "#F5EFE6", "destaque": "#7A1F2D",
+    pal = {"fundo": "#000000", "titulo": "#F5EFE6", "destaque": "#7A1F2D",
            "destaque_claro": "#C8374F", "texto": "#EDEDED", "nota": "#9A9A9A"}
     pal.update(spec.get("paleta", {}))
     dir_saida = os.path.join(dir_base, spec.get("saida", "finais"))

@@ -71,7 +71,7 @@ lifestyle. O carrossel vira uma "jornada" e cada lâmina puxa a próxima.
 
 | Zona | Conteúdo | Especificação |
 |---|---|---|
-| Fundo | imagem cinematográfica full-bleed | terço esquerdo escurecido (scrim) para o texto |
+| Fundo | imagem cinematográfica full-bleed | terço esquerdo escurecido (scrim) + o script desenha uma sombra preta sutil seguindo o contorno do texto, na frente da imagem, para legibilidade |
 | Kicker | pílula PREENCHIDA na cor destaque | `TEMA · SUBTEMA`, caps, texto contrastante, topo-esquerda |
 | Título | 1-2 linhas à esquerda | condensado ultra-bold ~90-110px, creme; linha com `destaque` vira TEXTO ESCURO SOBRE CAIXA PREENCHIDA (efeito marca-texto) |
 | Pílula URL | retângulo preenchido | URL em fonte mono bold, logo abaixo do título |
@@ -100,7 +100,7 @@ ELEMENTOS PREENCHIDOS (pílulas/caixas), não só em letras.
 
 | Papel | Vencedores (referência) | Padrão desta skill |
 |---|---|---|
-| Fundo | preto texturizado #0A0A0A | #0A0A0A |
+| Fundo | preto texturizado | **preto puro #000000** (vinheta sutil do script; nada de cinza) |
 | Título linha clara | creme #F5EFE6 | #F5EFE6 |
 | Destaque | dourado #F2C14E / amarelo #F5B301 | **vinho #7A1F2D** (troque pela cor da marca do usuário) |
 | Destaque claro (textos) | — | #C8374F |
@@ -114,6 +114,15 @@ textos (ex.: bordô #6B1F2E → #C8374F), mantendo a escura em preenchimentos se
 O `montar_slide.py` já se protege sozinho: se `destaque` for escuro, os textos de
 destaque usam `destaque_claro` automaticamente; e em pílulas preenchidas ele decide a
 cor do texto (claro sobre vinho, escuro sobre amarelo) pela luminância do preenchimento.
+
+## Tipografia
+
+- **Anton** (incluída em `fonts/`) em TUDO que é impactante: títulos, kickers do Modelo 2,
+  números dos passos, pílulas de destaque, URLs grandes.
+- **DM Sans** (incluída em `fonts/`) nas escritas secundárias: subtítulos, parágrafos,
+  notas, rodapé, kicker do Modelo 1.
+- Pílula de URL do Modelo 2 fica em fonte mono (estilo "endereço digitável").
+- O script resolve tudo sozinho pela pasta `fonts/`; não é preciso instalar nada.
 
 ## Templates de prompt de imagem (inglês, SEM texto na imagem)
 
@@ -159,7 +168,7 @@ editorial photography. No text, no letters, no watermark. Vertical portrait comp
   "tema": "Nome do Tema", "handle": "@perfil", "marca": "Marca",
   "modelo": 2, "saida": "finais",
   "paleta": {
-    "fundo": "#0A0A0A", "titulo": "#F5EFE6", "destaque": "#7A1F2D",
+    "fundo": "#000000", "titulo": "#F5EFE6", "destaque": "#7A1F2D",
     "destaque_claro": "#C8374F", "texto": "#EDEDED", "nota": "#9A9A9A"
   },
   "slides": [

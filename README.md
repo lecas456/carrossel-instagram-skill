@@ -7,9 +7,11 @@ seu nicho, estrutura 7–9 lâminas com lógica de engajamento, gera as imagens 
 
 O estilo foi calibrado em carrosséis reais de alto engajamento e vem em **dois modelos**:
 
-| Modelo 1 — Vitrine | Modelo 2 — Imersivo (capa) | Modelo 2 — Imersivo (conteúdo) |
-|---|---|---|
-| ![Modelo 1](exemplos/modelo-1-vitrine.png) | ![Modelo 2 capa](exemplos/modelo-2-capa.png) | ![Modelo 2](exemplos/modelo-2-imersivo.png) |
+| Modelo 1 — Vitrine | Modelo 2 — Imersivo |
+|---|---|
+| ![Modelo 1](exemplos/modelo-1-vitrine.png) | ![Modelo 2](exemplos/modelo-2-imersivo.png) |
+
+*(exemplos reais: imagens geradas com gpt-image-1 em qualidade `low` e montadas pela skill)*
 
 - **Modelo 1 — Vitrine:** texto centralizado, imagem 3D estilo "peça de museu", caixa de
   instrução "COMO FAZER". Ideal para conteúdo útil: ferramentas, dicas, tutoriais.
@@ -62,12 +64,12 @@ Custo médio por carrossel de 9 lâminas (gpt-image-1, 1024×1536): **≈ US$ 0,
 qualidade `low` (padrão) ou ≈ US$ 0,57 em `medium`. A skill rascunha em `low` e só propõe
 `medium` se você pedir mais qualidade.
 
-## Fontes (opcional)
+## Fontes
 
-Para a tipografia condensada idêntica à referência, baixe a fonte gratuita
-[Anton](https://fonts.google.com/specimen/Anton) e salve como `Anton-Regular.ttf` em
-`.claude/skills/carrossel-instagram/fonts/`. Sem ela, o script usa as fontes do sistema
-(Windows, macOS e Linux são suportados).
+Já vêm incluídas na pasta `fonts/` da skill (licença SIL OFL, uso comercial liberado):
+[Anton](https://fonts.google.com/specimen/Anton) para títulos e destaques e
+[DM Sans](https://fonts.google.com/specimen/DM+Sans) para os textos secundários.
+Nada para instalar — e dá para trocar a tipografia colocando outros `.ttf` na mesma pasta.
 
 ## Estrutura
 

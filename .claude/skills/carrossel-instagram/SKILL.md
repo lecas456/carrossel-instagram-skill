@@ -26,7 +26,7 @@ não cobrir.
 
 ## Passo 1 — Paleta de cores
 
-Padrão da skill: **fundo preto (#0A0A0A) + destaque vinho (#7A1F2D)**. Se o usuário tiver
+Padrão da skill: **fundo preto puro (#000000) + destaque vinho (#7A1F2D)**. Se o usuário tiver
 logomarca ou manual de marca, ofereça extrair a cor de destaque dela. SEMPRE confirme com
 AskUserQuestion antes de seguir:
 

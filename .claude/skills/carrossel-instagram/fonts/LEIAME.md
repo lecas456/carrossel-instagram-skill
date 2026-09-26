@@ -1,12 +1,13 @@
-# Fontes (opcional)
+# Fontes
 
-Coloque arquivos `.ttf`/`.otf` nesta pasta para o `montar_slide.py` usá-los com prioridade
-sobre as fontes do sistema.
+Esta pasta já inclui as fontes oficiais da skill (o `montar_slide.py` as usa com
+prioridade sobre as fontes do sistema):
 
-Para reproduzir a tipografia condensada dos carrosséis de referência, baixe a fonte
-**Anton** (grátis, Google Fonts: https://fonts.google.com/specimen/Anton) e salve aqui
-como `Anton-Regular.ttf`.
+- **Anton** (`Anton-Regular.ttf`) — tudo que é impactante: títulos, kickers, números.
+- **DM Sans** (`DMSans-*.ttf`) — escritas secundárias: subtítulos, parágrafos, notas.
 
-Sem nada aqui, o script usa o que encontrar no sistema (Impact/Arial Black no Windows,
-Helvetica no macOS, DejaVu/Liberation no Linux) — funciona, mas o visual do título fica
-menos fiel à referência.
+Ambas são do Google Fonts, licença SIL Open Font License (livres para uso comercial):
+https://fonts.google.com/specimen/Anton · https://fonts.google.com/specimen/DM+Sans
+
+Para trocar a tipografia, basta colocar outros `.ttf`/`.otf` aqui e ajustar as listas
+`FONTES_*` no topo de `scripts/montar_slide.py`.
