@@ -1,0 +1,15 @@
+# Segredos
+.env
+
+# Referências locais (screenshots de posts de terceiros — não publicar)
+Carrossel Vencedor*/
+
+# Configuração local do Claude Code
+.claude/settings.json
+.claude/settings.local.json
+
+# Saídas de carrosséis gerados
+**/finais/
+**/imagens/
+**/prompts.md
+**/slides.json
