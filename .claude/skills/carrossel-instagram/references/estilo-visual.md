@@ -71,7 +71,7 @@ lifestyle. O carrossel vira uma "jornada" e cada lâmina puxa a próxima.
 
 | Zona | Conteúdo | Especificação |
 |---|---|---|
-| Fundo | imagem cinematográfica full-bleed | terço esquerdo escurecido (scrim) + o script desenha uma sombra preta sutil seguindo o contorno do texto, na frente da imagem, para legibilidade |
+| Fundo | imagem cinematográfica full-bleed | terço esquerdo escurecido (scrim) + o script desenha um painel de sombra preta seguindo o contorno do texto, na frente da imagem, para legibilidade — intensidade via `sombra_texto` no json (1.0 padrão; maior = mais escuro; 0 = desliga) |
 | Kicker | pílula PREENCHIDA na cor destaque | `TEMA · SUBTEMA`, caps, texto contrastante, topo-esquerda |
 | Título | 1-2 linhas à esquerda | condensado ultra-bold ~90-110px, creme; linha com `destaque` vira TEXTO ESCURO SOBRE CAIXA PREENCHIDA (efeito marca-texto) |
 | Pílula URL | retângulo preenchido | URL em fonte mono bold, logo abaixo do título |
@@ -167,6 +167,7 @@ editorial photography. No text, no letters, no watermark. Vertical portrait comp
 {
   "tema": "Nome do Tema", "handle": "@perfil", "marca": "Marca",
   "modelo": 2, "saida": "finais",
+  "sombra_texto": 1.0,
   "paleta": {
     "fundo": "#000000", "titulo": "#F5EFE6", "destaque": "#7A1F2D",
     "destaque_claro": "#C8374F", "texto": "#EDEDED", "nota": "#9A9A9A"
