@@ -387,7 +387,7 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
         if linha.get("destaque"):
             # balao centralizado na caixa de tinta REAL das letras, com folga igual
             # em todos os lados (nao invade a linha de cima nem corta a de baixo)
-            y += 16  # respiro para o balao manter o mesmo ritmo das linhas normais
+            y += 10  # leve respiro antes do balao (colado fica sufocado; 16 ficava baixo)
             l, t, r, b = d.textbbox((X + 10, y), txt, font=f)
             pad = 16
             d.rounded_rectangle([l - pad, t - pad, r + pad, b + pad],
