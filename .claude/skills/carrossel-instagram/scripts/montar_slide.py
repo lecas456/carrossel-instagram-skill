@@ -16,7 +16,9 @@ MODELO 2 (Imersivo, full-bleed, texto a esquerda) — campos por lamina:
   lista [[nome, desc, url], ...] (recap), imagem (fundo inteiro)
 
 Json comum: tema, handle, marca, saida, paleta {fundo, titulo, destaque,
-destaque_claro, texto, nota}. Caminhos relativos ao proprio json.
+destaque_claro, texto, nota}, sombra_texto (Modelo 2: intensidade da sombra atras
+do texto; padrao 1.0, ex.: 1.3 = mais escura, 0.6 = mais sutil, 0 = sem sombra).
+Caminhos relativos ao proprio json.
 
 Limites e regras:
 - caixa.passos: no maximo 2 linhas renderizadas; caixa.nota: 1 linha (o excedente e cortado).
@@ -493,10 +495,16 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
             cor = pal["destaque"] if i <= idx else "#4a4a4a"
             d.rounded_rectangle([x0, y_b, x0 + seg, y_b + 12], radius=6, fill=cor)
 
-    # sombra sutil seguindo o contorno do conteudo + conteudo por cima
-    sombra = overlay.split()[3].filter(ImageFilter.GaussianBlur(26))
-    sombra = sombra.point(lambda a: min(120, int(a * 0.65)))
-    canvas.paste(Image.new("RGB", (W, H), "#000000"), (0, 0), sombra)
+    # sombra seguindo o contorno do conteudo: dilata alem das letras (painel
+    # continuo atras do bloco de texto), borra e escurece — legivel sem apagar a
+    # cena. Intensidade ajustavel via "sombra_texto" no json (padrao 1.0).
+    forca = float(meta.get("sombra_texto", 1.0))
+    if forca > 0:
+        teto = min(230, int(175 * forca))
+        sombra = overlay.split()[3].filter(ImageFilter.MaxFilter(21))
+        sombra = sombra.filter(ImageFilter.GaussianBlur(30))
+        sombra = sombra.point(lambda a: min(teto, int(a * 1.1 * forca)))
+        canvas.paste(Image.new("RGB", (W, H), "#000000"), (0, 0), sombra)
     canvas.paste(overlay, (0, 0), overlay)
     return canvas
 
