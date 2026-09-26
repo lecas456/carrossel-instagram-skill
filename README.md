@@ -7,9 +7,9 @@ seu nicho, estrutura 7–9 lâminas com lógica de engajamento, gera as imagens 
 
 O estilo foi calibrado em carrosséis reais de alto engajamento e vem em **dois modelos**:
 
-| Modelo 1 — Vitrine | Modelo 2 — Imersivo |
-|---|---|
-| ![Modelo 1](exemplos/modelo-1-vitrine.png) | ![Modelo 2](exemplos/modelo-2-imersivo.png) |
+| Modelo 1 — Vitrine | Modelo 2 — Imersivo (capa) | Modelo 2 — Imersivo (conteúdo) |
+|---|---|---|
+| ![Modelo 1](exemplos/modelo-1-vitrine.png) | ![Modelo 2 capa](exemplos/modelo-2-capa.png) | ![Modelo 2](exemplos/modelo-2-imersivo.png) |
 
 *(exemplos reais: imagens geradas com gpt-image-1 em qualidade `low` e montadas pela skill)*
 
