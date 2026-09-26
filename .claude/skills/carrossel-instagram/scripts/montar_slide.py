@@ -172,11 +172,14 @@ def desenhar_raio(d, x, y, h, cor):
 
 
 def pilula(d, x, y, texto, f, preenchimento, cor_texto, pad_x=26, pad_y=12):
-    """Desenha pilula preenchida com canto arredondado; retorna (largura, altura)."""
-    lg, at = larg(d, texto, f), alt(d, texto, f)
-    w, h = lg + 2 * pad_x, at + 2 * pad_y
+    """Desenha pilula preenchida com canto arredondado; retorna (largura, altura).
+    O texto e centralizado pela caixa de tinta REAL das letras (textbbox), para o
+    balao ficar sempre alinhado com a escrita."""
+    l, t, r, b = d.textbbox((0, 0), texto, font=f)
+    w = (r - l) + 2 * pad_x
+    h = (b - t) + 2 * pad_y
     d.rounded_rectangle([x, y, x + w, y + h], radius=h / 2 - 2, fill=preenchimento)
-    d.text((x + pad_x, y + pad_y - 4), texto, font=f, fill=cor_texto)
+    d.text((x + pad_x - l, y + pad_y - t), texto, font=f, fill=cor_texto)
     return w, h
 
 
@@ -373,8 +376,11 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
         f = fonte_ajustada(d, txt, FONTES_TITULO, 106, 880)
         at = alt(d, txt, f)
         if linha.get("destaque"):
-            lg = larg(d, txt, f)
-            d.rounded_rectangle([X - 6, y - 6, X + lg + 26, y + at + 22],
+            # balao centralizado na caixa de tinta REAL das letras, com folga igual
+            # em todos os lados (nao invade a linha de cima nem corta a de baixo)
+            l, t, r, b = d.textbbox((X + 10, y), txt, font=f)
+            pad = 16
+            d.rounded_rectangle([l - pad, t - pad, r + pad, b + pad],
                                 radius=8, fill=pal["destaque"])
             d.text((X + 10, y), txt, font=f, fill=cor_pill_txt)
         else:
