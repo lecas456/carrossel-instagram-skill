@@ -380,24 +380,29 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
         _, h = pilula(d, X, y, kicker, f, pal["destaque"], cor_pill_txt, pad_x=24, pad_y=12)
         y += h + 30
 
+    ink_prev = None  # base do desenho da linha anterior do titulo
     for linha in spec.get("titulo", []):
         txt = linha["texto"].upper()
         f = fonte_ajustada(d, txt, FONTES_TITULO, 106, 880)
-        at = alt(d, txt, f)
+        l0, t0, r0, b0 = d.textbbox((0, 0), txt, font=f)
         if linha.get("destaque"):
-            # balao centralizado na caixa de tinta REAL das letras, com folga igual
-            # em todos os lados (nao invade a linha de cima nem corta a de baixo)
-            y += 10  # leve respiro antes do balao (colado fica sufocado; 16 ficava baixo)
-            l, t, r, b = d.textbbox((X + 10, y), txt, font=f)
+            # balao centralizado na caixa de tinta REAL das letras. O TOPO do balao
+            # fica sempre a 24px da linha anterior — ancorado, para acentos (Í, Ã)
+            # nao empurrarem o balao para cima e comerem o respiro.
             pad = 16
+            if ink_prev is not None:
+                y = ink_prev + 24 + pad - t0
+            l, t, r, b = d.textbbox((X + 10, y), txt, font=f)
             d.rounded_rectangle([l - pad, t - pad, r + pad, b + pad],
                                 radius=8, fill=pal["destaque"])
             d.text((X + 10, y), txt, font=f, fill=cor_pill_txt)
             # o proximo elemento parte da BASE do balao, nao da linha de texto
+            ink_prev = b + pad
             y = b + pad + 26
         else:
             d.text((X, y), txt, font=f, fill=pal["titulo"])
-            y += at + 30
+            ink_prev = y + b0
+            y += (b0 - t0) + 30
     y += 6
 
     if spec.get("url"):
