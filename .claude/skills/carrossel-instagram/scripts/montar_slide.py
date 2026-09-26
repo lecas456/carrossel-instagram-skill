@@ -378,14 +378,17 @@ def montar_m2(spec, pal, meta, dir_base, idx, total):
         if linha.get("destaque"):
             # balao centralizado na caixa de tinta REAL das letras, com folga igual
             # em todos os lados (nao invade a linha de cima nem corta a de baixo)
+            y += 8  # respiro extra entre a linha anterior e o balao
             l, t, r, b = d.textbbox((X + 10, y), txt, font=f)
             pad = 16
             d.rounded_rectangle([l - pad, t - pad, r + pad, b + pad],
                                 radius=8, fill=pal["destaque"])
             d.text((X + 10, y), txt, font=f, fill=cor_pill_txt)
+            # o proximo elemento parte da BASE do balao, nao da linha de texto
+            y = b + pad + 26
         else:
             d.text((X, y), txt, font=f, fill=pal["titulo"])
-        y += at + 30
+            y += at + 30
     y += 6
 
     if spec.get("url"):
